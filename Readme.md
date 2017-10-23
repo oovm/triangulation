@@ -1,31 +1,10 @@
 Rust Template Project
 =====================
 
-Rust template project for monorepo
+The [shape-triangulation](https://github.com/oovm/triangulation/tree/dev) library is part of the [Shape Project](https://github.com/oovm/shape-rs/tree/dev) project, is dedicated to fast computation of triangulations of point sets
 
-## Change the initial commit
+## Delaunay Triangulation
 
-```shell
-git commit --amend --message "🎂 Project initialized!" --date "2012-12-12"
-```
 
-## Emoji Comment
+### Benchmark
 
-| Emoji  | Meaning                      |  
-|--------|------------------------------|  
-| 🎂     | Project initialized!         |  
-| 🎉     | Release new version          |  
-| 🧪🔮   | Experimental code            |   
-| 🔧🐛🐞 | Bug fix                      |  
-| 🔒     | Security fix                 |  
-| 🐣🐤🐥 | Add feature                  |  
-| 📝     | Documentation                |  
-| 🚀     | Performance improve!         |  
-| 🚧     | Work in progress             |  
-| 🚨     | Test coverage improve!       |  
-| 🚥     | CI improve!                  |  
-| 🔥     | Remove code or files         |
-| 🧹     | Code refactor                |
-| 📈     | Add analytics or branch code |
-| 🤖     | Automation fix               |
-| 📦     | Update dependencies          |

@@ -1,20 +1,22 @@
-use delaunay::triangulate_2d_f32;
 use shape_core::Point;
 use svg::node::element::SVG;
+use shape_triangulation::triangulate_2d_f32;
+use shape_triangulation::utils::random64_in_circle;
+
+pub struct SvgRendererConfig {
+    fill_render: bool,
+    fill_color: String,
+    edge_render: bool,
+    edge_color: String,
+    edge_width: f32,
+    vertex_render: bool,
+    vertex_color: String,
+    vertex_size: f32,
+}
 
 #[test]
 fn test() {
-    let points = vec![
-        Point { x: 10.0, y: 70.0 },
-        Point { x: 20.0, y: 80.0 },
-        Point { x: 70.0, y: 90.0 },
-        Point { x: 30.0, y: 60.0 },
-        Point { x: 40.0, y: 50.0 },
-        Point { x: 60.0, y: 40.0 },
-        Point { x: 50.0, y: 10.0 },
-        Point { x: 80.0, y: 30.0 },
-        Point { x: 90.0, y: 20.0 },
-    ];
+    let points = randf();
     let result = triangulate_2d_f32(&points);
     let rect = result.get_area();
     let mut svg = SVG::new()

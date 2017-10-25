@@ -10,5 +10,6 @@ pub use crate::triangulation::*;
 mod delaunay2f32;
 mod delaunay2f64;
 mod triangulation;
+pub mod utils;
 
 pub use crate::{delaunay2f32::triangulate_2d_f32, delaunay2f64::triangulate_2d_f64, triangulation::Triangulation};

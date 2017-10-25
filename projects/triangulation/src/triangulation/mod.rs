@@ -1,6 +1,8 @@
 use shape_core::{Line, Point, Rectangle, Triangle};
 
+#[cfg(feature = "svg")]
 mod with_svg;
+#[cfg(feature = "rand")]
 mod with_random;
 
 #[derive(Debug)]
@@ -12,15 +14,15 @@ pub struct Triangulation<T> {
 }
 
 impl<T: Clone> Triangulation<T> {
-    pub fn triangles(&self) -> impl Iterator<Item = Triangle<T>> + '_ {
+    pub fn triangles(&self) -> impl Iterator<Item=Triangle<T>> + '_ {
         self.triangle_vertexes().map(|[a, b, c]| Triangle::new(a, b, c))
     }
-    pub fn triangle_vertexes(&self) -> impl Iterator<Item = [Point<T>; 3]> + '_ {
+    pub fn triangle_vertexes(&self) -> impl Iterator<Item=[Point<T>; 3]> + '_ {
         self.vertex_traversal
             .chunks_exact(3) // 3 points per triangle
             .map(move |chunk| [self.point[chunk[0]].clone(), self.point[chunk[1]].clone(), self.point[chunk[2]].clone()])
     }
-    pub fn edges(&self) -> impl Iterator<Item = Line<T>> + '_ {
+    pub fn edges(&self) -> impl Iterator<Item=Line<T>> + '_ {
         vec![].into_iter()
     }
     pub fn get_indexes(&self) -> &[usize] {

@@ -12,6 +12,11 @@ edition = "2021"
 
 [dependencies]
 
+[dependencies.shape-triangulation]
+version = "*"
+path = "../triangulation"
+features = ["svg", "rand"]
+
 [dev-dependencies]
 
 [features]

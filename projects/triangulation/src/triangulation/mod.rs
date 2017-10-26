@@ -1,7 +1,6 @@
 use shape_core::{Line, Point, Rectangle, Triangle};
 
 
-
 #[derive(Debug)]
 pub struct Triangulation<T> {
     pub(crate) area: Rectangle<T>,
@@ -20,7 +19,9 @@ impl<T: Clone> Triangulation<T> {
             .map(move |chunk| [self.point[chunk[0]].clone(), self.point[chunk[1]].clone(), self.point[chunk[2]].clone()])
     }
     pub fn edges(&self) -> impl Iterator<Item=Line<T>> + '_ {
-        vec![].into_iter()
+        self.edge_traversal
+            .chunks_exact(2) // 2 points per line
+            .map(move |chunk| Line::new(self.point[chunk[0]].clone(), self.point[chunk[1]].clone()))
     }
     pub fn get_indexes(&self) -> &[usize] {
         &self.vertex_traversal

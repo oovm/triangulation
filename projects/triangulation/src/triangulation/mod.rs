@@ -1,9 +1,6 @@
 use shape_core::{Line, Point, Rectangle, Triangle};
 
-#[cfg(feature = "svg")]
-mod with_svg;
-#[cfg(feature = "rand")]
-mod with_random;
+
 
 #[derive(Debug)]
 pub struct Triangulation<T> {

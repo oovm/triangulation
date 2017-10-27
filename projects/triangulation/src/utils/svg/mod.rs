@@ -1,9 +1,7 @@
-use std::fmt::Display;
-use std::path::Path;
-use shape_core::Real;
-use svg::node::element::SVG;
-use svg::node::Value;
 use crate::Triangulation;
+use shape_core::{Real, Rectangle};
+use std::{fmt::Display, path::Path};
+use svg::node::{element::SVG, Value};
 
 #[derive(Debug)]
 pub struct TriangulationSVG {
@@ -14,7 +12,6 @@ pub struct TriangulationSVG {
     edge_width: f32,
     vertex_render: bool,
     vertex_color: String,
-    vertex_size: f32,
 }
 
 impl Default for TriangulationSVG {
@@ -24,10 +21,9 @@ impl Default for TriangulationSVG {
             fill_color: "yellow".to_string(),
             edge_render: true,
             edge_color: "black".to_string(),
-            edge_width: 1.0,
+            edge_width: 0.3,
             vertex_render: true,
             vertex_color: "red".to_string(),
-            vertex_size: 2.0,
         }
     }
 }
@@ -50,25 +46,48 @@ impl TriangulationSVG {
         self.set_edge(enable, color, width);
         self
     }
-    pub fn set_vertex(&mut self, enable: bool, color: &str, size: f32) {
+    pub fn set_vertex(&mut self, enable: bool, color: &str) {
         self.vertex_render = enable;
         self.vertex_color = color.to_string();
-        self.vertex_size = size;
     }
-    pub fn with_vertex(mut self, enable: bool, color: &str, size: f32) -> Self {
-        self.set_vertex(enable, color, size);
+    pub fn with_vertex(mut self, enable: bool, color: &str) -> Self {
+        self.set_vertex(enable, color);
         self
     }
 }
 
+fn get_area<T>(area: &Rectangle<T>) -> (f32, f32, f32, f32)
+where
+    T: Real,
+{
+    let x = area.anchor.x.to_f32().unwrap_or_default();
+    let y = area.anchor.y.to_f32().unwrap_or_default();
+    let w = area.side.0.to_f32().unwrap_or_default();
+    let h = area.side.1.to_f32().unwrap_or_default();
+    (x, y, w, h)
+}
+
+fn adaptive_point_size<T>(area: &Rectangle<T>) -> f32
+where
+    T: Real,
+{
+    let min_side = area.side.0.min(area.side.1);
+    min_side.to_f32().unwrap_or_default() / 100.0
+}
 
 impl TriangulationSVG {
-    pub fn render<T>(&self, set: &Triangulation<T>) -> SVG where T: Real + Display, Value: From<T> {
-        let area = set.get_area();
+    pub fn render<T>(&self, set: &Triangulation<T>) -> SVG
+    where
+        T: Real + Display,
+        Value: From<T>,
+    {
+        let area = set.area;
+        let (x, y, w, h) = get_area(&area);
+        let point_size = adaptive_point_size(&area);
         let mut out = SVG::new()
-            .set("width", area.side.0)
-            .set("height", area.side.1)
-            .set("viewBox", format!("{} {} {} {}", area.anchor.x, area.anchor.y, area.side.0, area.side.1));
+            .set("width", w)
+            .set("height", h)
+            .set("viewBox", format!("{},{},{},{}", x - point_size, y - point_size, w + point_size * 2.0, h + point_size * 2.0));
         if self.fill_render {
             for [a, b, c] in set.triangle_vertexes() {
                 out = out.add(
@@ -96,7 +115,7 @@ impl TriangulationSVG {
                     svg::node::element::Circle::new()
                         .set("cx", a.x)
                         .set("cy", a.y)
-                        .set("r", self.vertex_size)
+                        .set("r", point_size)
                         .set("fill", self.vertex_color.clone()),
                 );
             }
@@ -104,7 +123,9 @@ impl TriangulationSVG {
         out
     }
     pub fn save<P>(path: P, svg: &SVG) -> std::io::Result<()>
-        where P: AsRef<Path> {
+    where
+        P: AsRef<Path>,
+    {
         svg::save(path, svg)
     }
 }

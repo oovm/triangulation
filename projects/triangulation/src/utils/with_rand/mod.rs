@@ -1,5 +1,5 @@
 use rand::{rngs::SmallRng, Rng, SeedableRng};
-use shape_core::Point;
+use shape_core::{Point, PointSet};
 
 pub fn random64_in_rectangle(width: f64, height: f64, points: usize) -> Vec<Point<f64>> {
     let mut rand = SmallRng::from_entropy();
@@ -19,7 +19,7 @@ pub fn random32_in_rectangle(width: f32, height: f32, points: usize) -> Vec<Poin
     out
 }
 
-pub fn random64_in_ellipse(width: f64, height: f64, points: usize) -> Vec<Point<f64>> {
+pub fn random64_in_ellipse(width: f64, height: f64, points: usize) -> PointSet<f64> {
     let mut rand = SmallRng::from_entropy();
     let mut out = Vec::with_capacity(points);
     for _ in 0..points {
@@ -27,7 +27,7 @@ pub fn random64_in_ellipse(width: f64, height: f64, points: usize) -> Vec<Point<
         let rho = rand.gen_range(0.0..1.0f64);
         out.push(Point::new(rho.sqrt() * width * phi.cos() / 2.0, rho.sqrt() * height * phi.sin() / 2.0));
     }
-    out
+    PointSet { points: out }
 }
 
 pub fn random32_in_ellipse(width: f32, height: f32, points: usize) -> Vec<Point<f32>> {

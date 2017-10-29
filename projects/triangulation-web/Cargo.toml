@@ -11,12 +11,12 @@ license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
-shape-core = "0.1.3"
+shape-core = "*"
 
 [dependencies.shape-triangulation]
 version = "*"
 path = "../triangulation"
-features = ["svg", "rand"]
+features = ["rand", "shape-svg"]
 
 [dev-dependencies]
 

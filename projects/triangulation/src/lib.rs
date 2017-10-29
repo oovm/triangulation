@@ -1,3 +1,5 @@
+#![feature(iter_from_generator)]
+#![feature(generators)]
 #![deny(rustdoc::missing_crate_level_docs)]
 // #![deny(missing_docs)]
 #![deny(missing_debug_implementations)]
@@ -10,4 +12,4 @@ pub use crate::triangulation::*;
 mod triangulation;
 pub mod utils;
 
-pub use crate::triangulation::Triangulation;
+pub use crate::triangulation::{triangulate_2d_f64, Triangulation};

@@ -1,7 +1,7 @@
 use crate::Triangulation;
 use shape_core::{Real, Rectangle};
+use shape_svg::{ToSVG, SVG};
 use std::{fmt::Display, path::Path};
-use svg::node::{element::SVG, Value};
 
 #[derive(Debug)]
 pub struct TriangulationSVG {
@@ -60,10 +60,10 @@ fn get_area<T>(area: &Rectangle<T>) -> (f32, f32, f32, f32)
 where
     T: Real,
 {
-    let x = area.anchor.x.to_f32().unwrap_or_default();
-    let y = area.anchor.y.to_f32().unwrap_or_default();
-    let w = area.side.0.to_f32().unwrap_or_default();
-    let h = area.side.1.to_f32().unwrap_or_default();
+    let x = area.x.to_f32().unwrap_or_default();
+    let y = area.y.to_f32().unwrap_or_default();
+    let w = area.w.to_f32().unwrap_or_default();
+    let h = area.h.to_f32().unwrap_or_default();
     (x, y, w, h)
 }
 
@@ -71,7 +71,7 @@ fn adaptive_point_size<T>(area: &Rectangle<T>) -> f32
 where
     T: Real,
 {
-    let min_side = area.side.0.min(area.side.1);
+    let min_side = area.w.min(area.h);
     min_side.to_f32().unwrap_or_default() / 200.0
 }
 
@@ -79,45 +79,32 @@ impl TriangulationSVG {
     pub fn render<T>(&self, set: &Triangulation<T>) -> SVG
     where
         T: Real + Display,
-        Value: From<T>,
     {
         let area = set.area;
         let (x, y, w, h) = get_area(&area);
         let point_size = adaptive_point_size(&area);
         let mut out = SVG::new()
-            .set("width", w)
-            .set("height", h)
+            .set("width", w.to_string())
+            .set("height", h.to_string())
             .set("viewBox", format!("{},{},{},{}", x - point_size, y - point_size, w + point_size * 2.0, h + point_size * 2.0));
         if self.fill_render {
-            for [a, b, c] in set.triangle_vertexes() {
-                out = out.add(
-                    svg::node::element::Path::new()
-                        .set("fill", self.fill_color.clone())
-                        .set("stroke", "none")
-                        .set("d", format!("M {},{} L {},{} L {},{} Z", a.x, a.y, b.x, b.y, c.x, c.y)),
-                );
+            for triangle in set.triangles() {
+                out = out.add(triangle.to_svg().set("fill", self.fill_color.clone()).set("stroke", "none"));
             }
         }
         if self.edge_render {
-            for [a, b, c] in set.triangle_vertexes() {
+            for line in set.edges() {
                 out = out.add(
-                    svg::node::element::Path::new()
-                        .set("fill", "none")
+                    line.to_svg()
                         .set("stroke", self.edge_color.clone())
-                        .set("stroke-width", point_size * self.edge_width)
-                        .set("d", format!("M {},{} L {},{} L {},{} Z", a.x, a.y, b.x, b.y, c.x, c.y)),
+                        .set("stroke-width", self.edge_width)
+                        .set("fill", "none"),
                 );
             }
         }
         if self.vertex_render {
-            for a in set.get_points() {
-                out = out.add(
-                    svg::node::element::Circle::new()
-                        .set("cx", a.x)
-                        .set("cy", a.y)
-                        .set("r", point_size)
-                        .set("fill", self.vertex_color.clone()),
-                );
+            for point in set.vertices() {
+                out = out.add(point.to_svg().set("fill", self.vertex_color.clone()).set("stroke", "none").set("r", point_size));
             }
         }
         out
@@ -126,6 +113,6 @@ impl TriangulationSVG {
     where
         P: AsRef<Path>,
     {
-        svg::save(path, svg)
+        shape_svg::save(path, svg)
     }
 }

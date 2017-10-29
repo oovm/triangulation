@@ -1,6 +1,6 @@
 [package]
 name = "shape-triangulation"
-version = "0.0.0"
+version = "0.1.1"
 authors = ["Aster <192607617@qq.com>"]
 description = "The representation of delaunay triangulation"
 categories = ["mathematics"]
@@ -13,12 +13,9 @@ edition = "2021"
 
 [dependencies]
 delaunator = "1.0.2"
-svg = { version = "0.13.1", optional = true }
+shape-core = { version = "0.1.12"}
+shape-svg = { version = "0.0.7", optional = true }
 rand = { version = "0.8.5", features = ["small_rng"], optional = true }
-
-[dependencies.shape-core]
-version = "0.1.3"
-path = "C:\\Users\\Dell\\CLionProjects\\shape-rs\\projects\\shape-core"
 
 [dev-dependencies]
 criterion = { version = "0.4", features = ["html_reports"] }

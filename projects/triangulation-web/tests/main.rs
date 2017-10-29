@@ -4,7 +4,7 @@ fn ready() {
 }
 
 use shape_triangulation::{
-    triangulate_2d_f32,
+    triangulate_2d_f64,
     utils::{random32_in_ellipse, TriangulationSVG},
 };
 
@@ -12,7 +12,7 @@ use shape_triangulation::{
 fn test() {
     let renderer = TriangulationSVG::default();
     let points = random32_in_ellipse(1000.0, 618.0, 666);
-    let result = triangulate_2d_f32(&points);
+    let result = triangulate_2d_f64(&points);
     let svg = renderer.render(&result);
     TriangulationSVG::save("image.svg", &svg).unwrap();
 }

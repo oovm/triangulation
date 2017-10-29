@@ -72,7 +72,7 @@ where
     T: Real,
 {
     let min_side = area.side.0.min(area.side.1);
-    min_side.to_f32().unwrap_or_default() / 100.0
+    min_side.to_f32().unwrap_or_default() / 200.0
 }
 
 impl TriangulationSVG {
@@ -104,7 +104,7 @@ impl TriangulationSVG {
                     svg::node::element::Path::new()
                         .set("fill", "none")
                         .set("stroke", self.edge_color.clone())
-                        .set("stroke-width", self.edge_width)
+                        .set("stroke-width", point_size * self.edge_width)
                         .set("d", format!("M {},{} L {},{} L {},{} Z", a.x, a.y, b.x, b.y, c.x, c.y)),
                 );
             }

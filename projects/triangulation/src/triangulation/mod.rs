@@ -1,11 +1,10 @@
-use shape_core::{Line, Point, Rectangle, Triangle};
+use shape_core::{Itertools, Line, Point, PointSet, Rectangle, Shape2D, Triangle};
 
 #[derive(Debug)]
 pub struct Triangulation<T> {
     pub(crate) area: Rectangle<T>,
-    pub(crate) point: Vec<Point<T>>,
+    pub(crate) points: PointSet<T>,
     pub(crate) vertex_traversal: Vec<usize>,
-    pub(crate) edge_traversal: Vec<usize>,
 }
 
 impl<T: Clone> Triangulation<T> {
@@ -14,13 +13,9 @@ impl<T: Clone> Triangulation<T> {
     }
     pub fn triangle_vertexes(&self) -> impl Iterator<Item = [Point<T>; 3]> + '_ {
         self.vertex_traversal
-            .chunks_exact(3) // 3 points per triangle
-            .map(move |chunk| [self.point[chunk[0]].clone(), self.point[chunk[1]].clone(), self.point[chunk[2]].clone()])
-    }
-    pub fn edges(&self) -> impl Iterator<Item = Line<T>> + '_ {
-        self.edge_traversal
-            .chunks_exact(2) // 2 points per line
-            .map(move |chunk| Line::new(self.point[chunk[0]].clone(), self.point[chunk[1]].clone()))
+            .iter()
+            .tuple_windows::<(usize, usize, usize)>() // 3 points per triangle
+            .map(move |(a, b, c)| [self.points[a].clone(), self.points[b].clone(), self.points[c].clone()])
     }
     pub fn get_indexes(&self) -> &[usize] {
         &self.vertex_traversal
@@ -29,9 +24,16 @@ impl<T: Clone> Triangulation<T> {
         self.vertex_traversal.len() / 3
     }
     pub fn get_points(&self) -> &[Point<T>] {
-        &self.point
+        &self.points
     }
     pub fn get_area(&self) -> Rectangle<T> {
         self.area.clone()
     }
+}
+
+fn triangulate_2d_f64(points: PointSet<f64>) -> Triangulation<f64> {
+    let cast = points.points.iter().map(|p| delaunator::Point { x: p.x, y: p.y }).collect_vec();
+    let result = delaunator::triangulate(&cast);
+
+    Triangulation { area: points.boundary(), points, vertex_traversal: result.triangles }
 }

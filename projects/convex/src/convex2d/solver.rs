@@ -1,11 +1,11 @@
 use super::*;
 
-impl<T> ConvexHull<T> {
+impl<T> FastConvexHull<T> {
     pub fn new(points: &[Point<T>]) -> Self where T: Real {
+        // TODO: Optimize using divide and conquer
         graham_scan(points)
     }
 }
-
 
 fn sort_by_min_angle<F: Real>(set: &[Point<F>], min: &Point<F>) -> Vec<Point<F>> {
     let mut points: Vec<(F, F, Point<F>)> = set
@@ -28,9 +28,9 @@ fn z_vector_product<F: Real>(a: &Point<F>, b: &Point<F>, c: &Point<F>) -> F {
     (b.x - a.x) * (c.y - a.y) - (c.x - a.x) * (b.y - a.y)
 }
 
-fn graham_scan<F: Real>(set: &[Point<F>]) -> ConvexHull<F> {
+fn graham_scan<F: Real>(set: &[Point<F>]) -> FastConvexHull<F> {
     if set.is_empty() {
-        return ConvexHull {
+        return FastConvexHull {
             bounds: vec![],
             inners: vec![],
         };
@@ -51,7 +51,7 @@ fn graham_scan<F: Real>(set: &[Point<F>]) -> ConvexHull<F> {
     let points = sort_by_min_angle(set, min);
 
     if points.len() <= 3 {
-        return ConvexHull {
+        return FastConvexHull {
             bounds: points,
             inners: inner,
         };
@@ -69,9 +69,25 @@ fn graham_scan<F: Real>(set: &[Point<F>]) -> ConvexHull<F> {
         stack.push(point);
     }
 
-    ConvexHull {
+    FastConvexHull {
         bounds: stack,
         inners: inner,
+    }
+}
+
+impl<T: Real> AddAssign<&[Point<T>]> for FastConvexHull<T> {
+    fn add_assign(&mut self, rhs: &[Point<T>]) {
+        self.bounds.extend_from_slice(rhs);
+        let Self { bounds, inners } = graham_scan(&self.bounds);
+        self.bounds = bounds;
+        self.inners.extend_from_slice(&inners);
+    }
+}
+
+impl<T: Real> AddAssign<&FastConvexHull<T>> for FastConvexHull<T> {
+    fn add_assign(&mut self, rhs: &FastConvexHull<T>) {
+        self.add_assign(rhs.bounds.as_slice());
+        self.inners.extend_from_slice(&rhs.inners);
     }
 }
 

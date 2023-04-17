@@ -5,11 +5,9 @@
 #![doc(html_logo_url = "https://raw.githubusercontent.com/oovm/shape-rs/dev/projects/images/Trapezohedron.svg")]
 #![doc(html_favicon_url = "https://raw.githubusercontent.com/oovm/shape-rs/dev/projects/images/Trapezohedron.svg")]
 
-pub use crate::traits::*;
+// pub use crate::traits::*;
 
-mod extensions;
-mod traits;
-mod utils;
-
-#[cfg(feature = "shape")]
-pub use graphics_shape as shape;
+// mod extensions;
+// mod traits;
+// mod utils;
+mod convex;

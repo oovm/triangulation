@@ -1,6 +1,6 @@
 [package]
 name = "shape-convex"
-version = "0.0.1"
+version = "0.0.0"
 authors = ["Aster <192607617@qq.com>"]
 description = "The representation projective transformation"
 categories = ["mathematics", "graphics"]
@@ -12,12 +12,12 @@ license = "MPL-2.0"
 edition = "2021"
 
 [dependencies]
-partition = "0.1.2"
-num-traits = "0.2.15"
+#partition = "0.1.2"
+#num-traits = "0.2.15"
 
 [dependencies.shape-core]
-version = "0.1.*"
-path = "../shape-core"
+version = "0.1.12"
+#path = "../shape-core"
 
 [dev-dependencies]
 
